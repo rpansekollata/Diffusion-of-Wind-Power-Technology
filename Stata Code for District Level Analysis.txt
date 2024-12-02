@@ -1,0 +1,142 @@
+. pwcorr  gap mlas_ruling_party starea  expectedplf, sig star(0.1)
+
+             |      gap mlas_r~y   starea expect~f
+-------------+------------------------------------
+         gap |   1.0000 
+             |
+             |
+mlas_rulin~y |  -0.2127*  1.0000 
+             |   0.0729
+             |
+      starea |  -0.2062*  0.1385   1.0000 
+             |   0.0823   0.2460
+             |
+ expectedplf |  -0.3756*  0.2847*  0.5749*  1.0000 
+             |   0.0011   0.0154   0.0000
+
+. regress lnca1  gap mlas_ruling_party starea  expectedplf, r
+
+Linear regression                                      Number of obs =      72
+                                                       F(  4,    67) =   10.56
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2176
+                                                       Root MSE      =   4.671
+
+-----------------------------------------------------------------------------------
+                  |               Robust
+            lnca1 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+------------------+----------------------------------------------------------------
+              gap |  -.0015187   .0014041    -1.08   0.283    -.0043214    .0012839
+mlas_ruling_party |   7.179456   2.350897     3.05   0.003     2.487047    11.87187
+           starea |  -.0208141   .0096305    -2.16   0.034    -.0400367   -.0015916
+      expectedplf |   39.74883   17.74569     2.24   0.028     4.328286    75.16937
+            _cons |  -9.533969   2.684582    -3.55   0.001    -14.89242   -4.175521
+-----------------------------------------------------------------------------------
+
+
+. xtreg lnca1  gap mlas_ruling_party starea  expectedplf, fe r
+
+Fixed-effects (within) regression               Number of obs      =        72
+Group variable: slno                            Number of groups   =         9
+
+R-sq:  within  = 0.1753                         Obs per group: min =         8
+       between = 0.1878                                        avg =       8.0
+       overall = 0.0714                                        max =         8
+
+                                                F(3,8)             =         .
+corr(u_i, Xb)  = -0.9999                        Prob > F           =         .
+
+                                        (Std. Err. adjusted for 9 clusters in slno)
+-----------------------------------------------------------------------------------
+                  |               Robust
+            lnca1 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+------------------+----------------------------------------------------------------
+              gap |  -.0059532   .0025201    -2.36   0.046    -.0117645   -.0001418
+mlas_ruling_party |   5.083655   2.403845     2.11   0.067    -.4596219    10.62693
+           starea |  -.2406433    .045278    -5.31   0.001    -.3450546    -.136232
+      expectedplf |   6713.905   922.7518     7.28   0.000     4586.035    8841.774
+            _cons |  -1114.529   154.8925    -7.20   0.000    -1471.712    -757.346
+------------------+----------------------------------------------------------------
+          sigma_u |  253.86635
+          sigma_e |  4.0442098
+              rho |  .99974628   (fraction of variance due to u_i)
+-----------------------------------------------------------------------------------
+
+. xtreg lnca1  gap mlas_ruling_party starea  expectedplf, re r
+
+Random-effects GLS regression                   Number of obs      =        72
+Group variable: slno                            Number of groups   =         9
+
+R-sq:  within  = 0.0485                         Obs per group: min =         8
+       between = 0.4637                                        avg =       8.0
+       overall = 0.2013                                        max =         8
+
+                                                Wald chi2(4)       =     45.63
+corr(u_i, X)   = 0 (assumed)                    Prob > chi2        =    0.0000
+
+                                        (Std. Err. adjusted for 9 clusters in slno)
+-----------------------------------------------------------------------------------
+                  |               Robust
+            lnca1 |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+------------------+----------------------------------------------------------------
+              gap |  -.0017691   .0015549    -1.14   0.255    -.0048166    .0012784
+mlas_ruling_party |   4.558399   1.935937     2.35   0.019     .7640311    8.352766
+           starea |  -.0288507   .0106466    -2.71   0.007    -.0497177   -.0079837
+      expectedplf |   51.53281   19.16088     2.69   0.007     13.97818    89.08744
+            _cons |  -9.724015   2.624983    -3.70   0.000    -14.86889   -4.579143
+------------------+----------------------------------------------------------------
+          sigma_u |  2.4244758
+          sigma_e |  4.0442098
+              rho |  .26437699   (fraction of variance due to u_i)
+-----------------------------------------------------------------------------------
+
+
+. hausman fixed random
+
+Note: the rank of the differenced variance matrix (2) does not equal the number of coefficients being tested (4); be sure this is
+        what you expect, or there may be problems computing the test.  Examine the output of your estimators for anything
+        unexpected and possibly consider scaling your variables so that the coefficients are on a similar scale.
+
+                 ---- Coefficients ----
+             |      (b)          (B)            (b-B)     sqrt(diag(V_b-V_B))
+             |     fixed        random       Difference          S.E.
+-------------+----------------------------------------------------------------
+         gap |   -.0059532    -.0017691       -.0041841        .0038666
+mlas_rulin~y |    5.083655     4.558399         .525256         .836053
+      starea |   -.2406433    -.0288507       -.2117926        .0708615
+ expectedplf |    6713.905     51.53281        6662.372        7328.093
+------------------------------------------------------------------------------
+                           b = consistent under Ho and Ha; obtained from xtreg
+            B = inconsistent under Ha, efficient under Ho; obtained from xtreg
+
+    Test:  Ho:  difference in coefficients not systematic
+
+                  chi2(2) = (b-B)'[(V_b-V_B)^(-1)](b-B)
+                          =        0.99
+                Prob>chi2 =      0.6093
+
+
+. xtgls lnca1 gap mlas_ruling_party starea  expectedplf , panels(hetero) corr(ar1)
+
+Cross-sectional time-series FGLS regression
+
+Coefficients:  generalized least squares
+Panels:        heteroskedastic
+Correlation:   common AR(1) coefficient for all panels  (0.3405)
+
+Estimated covariances      =         9          Number of obs      =        72
+Estimated autocorrelations =         1          Number of groups   =         9
+Estimated coefficients     =         5          Time periods       =         8
+                                                Wald chi2(4)       =     24.43
+                                                Prob > chi2        =    0.0001
+
+-----------------------------------------------------------------------------------
+            lnca1 |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+------------------+----------------------------------------------------------------
+              gap |   -.003395   .0015584    -2.18   0.029    -.0064494   -.0003406
+mlas_ruling_party |   6.713945   2.444979     2.75   0.006     1.921874    11.50602
+           starea |  -.0282075   .0120101    -2.35   0.019    -.0517469   -.0046681
+      expectedplf |   38.88237   23.53791     1.65   0.099    -7.251087    85.01584
+            _cons |  -7.653569   3.935172    -1.94   0.052    -15.36636     .059227
+-----------------------------------------------------------------------------------
+
